@@ -4,6 +4,7 @@
             id int NOT NULL AUTO_INCREMENT, 
             `login` VARCHAR(50) NOT NULL,
             `password` VARCHAR(50) NOT NULL,
+            `location` INT,
             PRIMARY KEY (id)
         )";
 
@@ -11,7 +12,7 @@
         CREATE TABLE IF NOT EXISTS `messages`.`messages` (
             id INT NOT NULL AUTO_INCREMENT, 
             `text` TEXT NOT NULL,
-            `user_id` int,
+            `user_id` INT,
             PRIMARY KEY (id)
         )";
 

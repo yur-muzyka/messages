@@ -1,3 +1,10 @@
+$(document).ready(function () {
+    $("#pac_form").submit(Send);
+    $("#pac_text").focus();
+    setInterval("Load();", 2000);
+	Load();
+});
+
 function Send() {
     // Выполняем запрос к серверу с помощью jquery ajax: $.post(адрес, {параметры запроса}, функция которая вызывается по завершению запроса)
     $.post("ajax.php",  
@@ -17,11 +24,11 @@ function Send() {
 var last_message_id = 0; // номер последнего сообщения, что получил пользователь
 var load_in_process = false; // можем ли мы выполнять сейчас загрузку сообщений. Сначала стоит false, что значит - да, можем
 
-function load_groups() {
+function Load() {
     if(!load_in_process) {
 	    load_in_process = true;
     	$.post("ajax.php", {
-      	    act: "load_groups",
+            last: last_message_id,
     	},
    	    function (result) {
 		    eval(result);
@@ -29,42 +36,3 @@ function load_groups() {
     	});
     }
 }
-
-function Load() {
-    // Проверяем можем ли мы загружать сообщения. Это сделанно для того, что бы мы не начали загрузку заново, если старая загрузка ещё не закончилась.
-    if(!load_in_process)
-    {
-	    load_in_process = true; // загрузка началась
-	    // отсылаем запрос серверу, который вернёт нам javascript
-    	$.post("ajax.php", 
-    	{
-      	    act: "load", // указываем на то что это загрузка сообщений
-      	    last: last_message_id, // передаём номер последнего сообщения который получил пользователь в прошлую загрузку
-      	    rand: (new Date()).getTime()
-    	},
-   	    function (result) { // в эту функцию в качестве параметра передаётся javascript код, который мы должны выполнить
-		    eval(result); // выполняем скрипт полученный от сервера
-		    $(".chat").scrollTop($(".chat").get(0).scrollHeight); // прокручиваем сообщения вниз
-		    load_in_process = false; // говорим что загрузка закончилась, можем теперь начать новую загрузку
-    	});
-    }
-}
-
-
-
-
-$(function() {
-    $("#change_status").click(function(e) {
-        post();
-      e.preventDefault();
-
-    });
-  });
-
-  function post() {
-    $.post("ajax.php", {
-            act: "send" }, 
-            Load );
-  }
-
-<!--<a id="change_status" href="/">jquery</a>-->

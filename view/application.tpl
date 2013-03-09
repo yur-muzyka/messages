@@ -3,12 +3,11 @@
         <title>Users</title>
         <script type="text/javascript" src="view/js/jquery.js"></script>
         <script type="text/javascript" src="view/js/custom.js"></script>
-        <script type="text/javascript" src="view/js/groups.js"></script>
     </head>
     <body>
         {logout}
         <hr> 
-<div id="ajax"></div>
+        <div id="ajax"></div>
     </body>
 </html>
 
