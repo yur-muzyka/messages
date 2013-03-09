@@ -3,9 +3,12 @@ require "config.php";
 require "model/user.php";
 require "model/auth.php";
 require "model/template.php";  
+require "model/message.php";
 
 session_start();
 $user = Auth::current_user();
-$user->password = "kuj";
-$user->save();
+
+var_dump($user->get_messages(3));
+
+
 ?>

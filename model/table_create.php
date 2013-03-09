@@ -12,7 +12,8 @@
         CREATE TABLE IF NOT EXISTS `messages`.`messages` (
             id INT NOT NULL AUTO_INCREMENT, 
             `text` TEXT NOT NULL,
-            `user_id` INT,
+            `author_id` INT,
+            `recipient_id` INT,
             PRIMARY KEY (id)
         )";
 
