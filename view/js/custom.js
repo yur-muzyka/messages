@@ -20,33 +20,29 @@ var last_message_id = 0;
 var post_params = {};
 var load_in_process = false;
 var edit = false;
+var layout = "false";
+var tempScrollTop = 0;
+var editScrollTop = 0;
 
-function Load(parameters) {
-    if ((parameters && !parameters["edit"]) || !parameters) {
-        post_params["edit"] = edit;
-    } else {
-        post_params["edit"] = parameters["edit"];
-    } 
-
-    post_params["last_message_id"] = last_message_id;
-
+function Load() {
     if (!load_in_process) {
 	    load_in_process = true;
-    	$.post("ajax.php", 
-                post_params,
+    	$.post("ajax.php", {
+            last_message_id: last_message_id,
+            edit: edit,
+            layout: layout
+        },
+                //post_params,
    	    function (result) {
-            var tempTextArea = $("#m_text").val();
-            var tempScrollTop = $(window).scrollTop();
-            
-
-//var ss = $("#m_text").getSelection();
-     //alert(ss);
-
-            //$.getScript(result);
+            if (editScrollTop) {
+                tempScrollTop = editScrollTop;
+                editScrollTop = 0;
+            } else {
+                tempScrollTop = $(window).scrollTop();
+            }
             eval(result);
 		    load_in_process = false;
             $(window).scrollTop(tempScrollTop);
-            $("#m_text").val(tempTextArea);
     	});
     }
 }        

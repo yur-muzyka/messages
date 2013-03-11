@@ -35,7 +35,8 @@ class Message {
 
     public static function get_new_messages($author_id, $recipient_id) {
         $new_messages = array();
-        $all_mess = Message::get_messages($author_id, $recipient_id); foreach ($all_mess as $message) { if ($message->recipient_id == $author_id && 
+        $all_mess = Message::get_messages($author_id, $recipient_id, 0);
+        foreach ($all_mess as $message) { if ($message->recipient_id == $author_id && 
                 $message->recipient_status == "new") {
                     $new_messages[] = $message;
                 }

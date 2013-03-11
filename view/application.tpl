@@ -8,7 +8,9 @@
     <body>
         {logout}
         <hr> 
+        <div id="header"></div>
         <div id="ajax"></div>
+        <div id="footer"></div>
     </body>
 </html>
 

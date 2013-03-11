@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $("#m_form").submit(Send);
-    $("#m_text").focus();    
+    //$("#m_text").focus();    
 }); 
 
 
@@ -8,8 +8,18 @@ $(document).ready(function () {
 $(function() {
      $(".btnSubmit").click(function(){
          if ($(this).val() == "Cancel") {
-            $("#ajax").empty();
-            last_message_id = 0;  
+            editScrollTop = $(window).scrollTop();
+
+            $.post("controller/message.php", {
+                action: "edit",
+                id:  $("#m_id").val(),
+                text: $("#text").val()
+            }),
+
+
+
+            //$("#ajax").empty();
+            //last_message_id = 0;  
             edit = "false";
             Load(); 
          } else if ($(this).val() == "Save") { 
@@ -18,6 +28,7 @@ $(function() {
                 id:  $("#m_id").val(),
                 text: $("#text").val()
             }),
+         editScrollTop = $(window).scrollTop();
          $("#ajax").empty();
          last_message_id = 0;  
          edit = "false";
@@ -32,9 +43,23 @@ $(function() {
         parameters = $(this).attr('href').split('?')[1];
 		$.get( $(this).attr('href'), function() {
         });
-        $("#ajax").empty();
-        last_message_id = 0;
-        Load(parseParams(parameters));
+        editScrollTop = $(window).scrollTop();
+                    //$("#ajax").replaceWith("lol");
+
+
+var str = $("#ajax").html();
+var regex = /a/gi;
+$("#ajax").html(str.replace(regex, "\n"));
+
+
+
+        //$("#ajax").empty();
+        //$("#header").empty();
+        //$("#footer").empty();
+        //layout = false;
+        //last_message_id = 0;
+        edit = parseParams(parameters)["edit"];
+        Load();
 		return false;
     }); 
 });     

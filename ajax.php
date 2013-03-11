@@ -29,7 +29,7 @@ if (!$user->location) {      // groups view
         $count++;
         $users_tpl->set_value("login", $us->login);
         $users_tpl->set_value("count", $count);
-        $users_tpl->set_value("mess_all", count(Message::get_messages($user->id, $us->id)));
+        $users_tpl->set_value("mess_all", count(Message::get_messages($user->id, $us->id, 0)));
         $users_tpl->set_value("mess_new", count(Message::get_new_messages($user->id, $us->id)));
         $users_tpl->set_value("id", $us->id);
         $users_tpl->tpl_parse();
@@ -41,17 +41,36 @@ if (!$user->location) {      // groups view
     $js .= join('', file("view/js/remote.js"));
     echo $js;
 } else {               // messages view
-    $js = 'var ajax = $("#ajax");';
     if ($_POST["edit"]) {
         $edit = $_POST["edit"];
         $js .= "edit=".$edit.";";
     }
+    $js .= 'var ajax = $("#ajax");';
+
+    // header and footer(text_area)
+    $layout = $_POST["layout"];
 
     $last_message_id = $_POST["last_message_id"];
-
     $messages = Message::get_messages($user->id, $user->location, $last_message_id);
-    //$main_tpl = new Template();
- 
+
+    if ($layout == "false") {
+        $header_tpl = new Template();
+        $footer_tpl = new Template();
+        $header_tpl->get_tpl("view/_messages_header.tpl");
+        $header_tpl->set_value("opponent", User::find($user->location)->login);
+        $header_tpl->tpl_parse();
+
+        $footer_tpl->get_tpl("view/_text_area.tpl");
+
+        $js .= 'var header = $("#header");';
+        $js .= 'var footer = $("#footer");';
+        $js .= 'header.append("'. mysql_real_escape_string($header_tpl->html) .'");';
+        $js .= 'footer.append("'. mysql_real_escape_string($footer_tpl->html) .'");';
+        $js .= 'layout=true;';
+
+    }
+
+    // messages load
     if (count($messages) > 0) {
         $message_tpl = new Template();
         foreach ($messages as $message) {
@@ -71,13 +90,6 @@ if (!$user->location) {      // groups view
         $js .= 'last_message_id='. $last_message_id .';';
         $js .= 'ajax.append("'. mysql_real_escape_string($messages_list) .'");';
     }
-
-    //$main_tpl->get_tpl("view/messages.tpl");
-    //$main_tpl->set_value("messages", $messages_list);
-    //$main_tpl->set_value("opponent", User::find($user->location)->login);
-    //$main_tpl->set_value("text_area", join('', file("view/_text_area.html")));
-    //$main_tpl->tpl_parse();
-    
 
     $js .= join('', file("view/js/remote.js"));
     echo $js;
