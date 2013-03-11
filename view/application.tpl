@@ -9,7 +9,6 @@
         {logout}
         <hr> 
         <div id="ajax"></div>
-        <div id="text_area"></div>
     </body>
 </html>
 

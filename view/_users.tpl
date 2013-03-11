@@ -1,1 +1,1 @@
-<a class="change_location" href="location.php/?id={id}">{count}. <b>{login}</b> (9/<b>3</b>)</a><br>
+<a class="remote" href="controller/location.php/?id={id}">{count}. <b>{login}</b> ({mess_all}/<b>{mess_new}</b>)</a><br>

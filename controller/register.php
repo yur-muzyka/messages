@@ -1,6 +1,6 @@
 <?
-    require "config.php";
-    require "model/user.php";
+    require "../config.php";
+    require "../model/user.php";
 
     $login = $_POST["login"];
     $password = $_POST["password"];

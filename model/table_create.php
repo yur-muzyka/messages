@@ -14,6 +14,8 @@
             `text` TEXT NOT NULL,
             `author_id` INT,
             `recipient_id` INT,
+            `author_status` VARCHAR(50),
+            `recipient_status` VARCHAR(50),
             PRIMARY KEY (id)
         )";
 

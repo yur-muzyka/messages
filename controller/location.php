@@ -1,8 +1,8 @@
 <?
-require "config.php";
-require "model/user.php";
-require "model/auth.php";
-require "model/template.php";
+require "../config.php";
+require "../model/user.php";
+require "../model/auth.php";
+require "../model/template.php";
 
 session_start();
 if (!Auth::is_logged($_SESSION["login"], $_SESSION["password"])) {

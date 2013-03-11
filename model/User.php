@@ -55,22 +55,5 @@ class User {
         mysql_query("UPDATE users SET login='$this->login', password='$this->password', location='$this->location'
             WHERE id='$this->id'");
     }
-
-    public function get_messages($recipient_id) {
-        $result = mysql_query("SELECT * FROM messages WHERE author_id='$this->id' AND recipient_id='$recipient_id'
-                               UNION ALL
-                               SELECT * FROM messages WHERE author_id='$recipient_id' AND recipient_id='$this->id'
-                               ORDER BY id");
-        $messages = array();
-        while ($raw = mysql_fetch_array($result)) {
-            $message = new Message();
-            $message->id = $raw["id"];
-            $message->text = $raw["text"];
-            $message->author_id = $raw["author_id"];
-            $message->recipient_id = $raw["recipient_id"];
-            $messages[] = $message;
-        }
-        return $messages;
-    }
 }
 ?>

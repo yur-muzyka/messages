@@ -6,9 +6,7 @@ require "model/template.php";
 require "model/message.php";
 
 session_start();
-$user = Auth::current_user();
 
-var_dump($user->get_messages(3));
-
-
+$message = Message::get_messages(2, 3, 19);
+echo count($message);
 ?>
