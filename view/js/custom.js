@@ -8,27 +8,27 @@ function Send() {
         act: "send",  // указываем скрипту, что мы отправл€ем новое сообщение и его нужно записать
         text: $("#m_text").val() //  сам текст сообщени€
     },
-     Load );
-
+    Load );
     $("#m_text").val("");
     $("#m_text").focus();
-    
     return false;
 }
 
+var last_edit = null;
 var action = null;
 var m_id = null;
 var m_text = null;
 var last_message_id = 0;
 var post_params = {};
 var load_in_process = false;
-var edit = false;
-var layout = "false";
+var edit = null;
+var layout = "null";
 var tempScrollTop = 0;
 var editScrollTop = 0;
-var replace_from = false;
-var replace_to = false;
+var replace_from = null;
+var replace_to = null;
 var str = null;
+var del = null;
 
 function Load() {
     if (!load_in_process) {
@@ -36,6 +36,7 @@ function Load() {
     	$.post("ajax.php", {
             last_message_id: last_message_id,
             edit: edit,
+            del: del,
             layout: layout,
             action: action,
             m_id: m_id,
@@ -60,13 +61,19 @@ function Load() {
 }        
 
 function ajax_replace() {
-    if (edit) {
+    if (edit || del) {
         str = $("#ajax").html();
+        //$("#ajax").html(str.replace(new RegExp(replace_from, 'gi'), replace_to));
         $(replace_from).html(replace_to);
-        edit = false;
-        replace_from = false;
-        replace_to = false;
+        edit = null;
+        replace_from = null;
+        replace_to = null;
         action = null;
+        del = null;
     }
 }
 
+function replace_previous_edit() {
+    $(last_edit[0]).html(last_edit[1]);
+    last_edit = null;
+}

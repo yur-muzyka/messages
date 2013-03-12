@@ -15,7 +15,7 @@ $id = $_POST["id"];
 $text = $_POST["text"];
 $delete = $_GET["delete"];
 
-if ($action && $action == "edit") {
+if ($action && $action == "save") {
     $message = Message::find($id);
     $message->text = $text;
     $message->save();

@@ -53,7 +53,7 @@ if (!$user->location) {      // groups view
     $last_message_id = $_POST["last_message_id"];
     $messages = Message::get_messages($user->id, $user->location, $last_message_id);
 
-    if ($layout == "false") {
+    if ($layout == "null") {
         $header_tpl = new Template();
         $footer_tpl = new Template();
         $header_tpl->get_tpl("view/_messages_header.tpl");
@@ -78,8 +78,8 @@ if (!$user->location) {      // groups view
                 } else {
                     $message_tpl->get_tpl("view/_message.tpl");
                 }
-            $from = User::find($message->author_id);
-            $message_tpl->set_value("author", $from->login);
+            $author = User::find($message->author_id);
+            $message_tpl->set_value("author", $author->login);
             $message_tpl->set_value("text", $message->text);
             $message_tpl->set_value("id", $message->id);
             $message_tpl->tpl_parse();
@@ -89,33 +89,49 @@ if (!$user->location) {      // groups view
         $js .= 'last_message_id='. $last_message_id .';';
         $js .= 'ajax.append("'. mysql_real_escape_string($messages_list) .'");';
     }
-
+    
+    $del = $_POST["del"];
     // ajax_replace
     if ($edit) {
-        $edit_temple = new Template();
-        $edit_temple->get_tpl("view/_message_edit.tpl");
-        $edit_text = Message::find($edit)->text;
-        $edit_temple->set_value("text", $edit_text);
-        $edit_temple->set_value("id", $edit);
-        $edit_temple->tpl_parse();
-
-        $standard_temple = new Template();
-        $standard_temple->get_tpl("view/_message.tpl");
-        $standard_text = Message::find($message_id)->text;
-        $standard_temple->set_value("text", $standard_text);
-        $standard_temple->set_value("id", $message_id);
-        $standard_temple->tpl_parse();
-
-        if ($action == "cancel") {
+        if ($action == "cancel" || $action == "save") {
+            $message = Message::find($message_id);
+            $author = User::find($message->author_id);
+            $standard_text = $message->text;
+            $replace_to = create_message_html("view/_message.tpl", $message_id, $author->login, $standard_text);
             $js .= 'replace_from = "#m_'.$message_id.'";';
-            $js .= 'replace_to = "'. mysql_real_escape_string($standard_temple->html) .'";';
-        } else if ($edit != "false") {
+            $js .= 'replace_to = "'. mysql_real_escape_string($replace_to) .'";';
+        } else if ($del != "null") {
+            $js .= 'replace_from = "#m_'. $del .'";';
+            $js .= 'replace_to = "";';
+        }
+        
+        
+        
+        else if ($edit != "null") {
+            $message = Message::find($edit);
+            $author = User::find($message->author_id);
+            $replace_to = create_message_html("view/_message_edit.tpl", $edit, "", $message->text); 
+            $last_edit = create_message_html("view/_message.tpl", $edit, $author->login, $message->text); 
             $js .= 'replace_from = "#m_'.$edit.'";';
-            $js .= 'replace_to = "'. mysql_real_escape_string($edit_temple->html) .'";';
+            $js .= 'replace_to = "'. mysql_real_escape_string($replace_to) .'";';
+            $js .= 'last_edit = ["#m_'.$edit. '", "'.mysql_real_escape_string($last_edit) .'"];'; 
         }
     }
+
 
     $js .= join('', file("view/js/remote.js"));
     echo $js;
 }
+
+function create_message_html($templ_path, $id, $author, $text) {
+    $tpl = new Template();
+    $tpl->get_tpl($templ_path);
+    $tpl->set_value("author", $author);
+    $tpl->set_value("text", $text);
+    $tpl->set_value("id", $id);
+    $tpl->tpl_parse();
+    return $tpl->html;
+}
+
+
 ?>

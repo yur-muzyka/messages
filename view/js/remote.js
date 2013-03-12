@@ -5,31 +5,32 @@ $(document).ready(function () {
 }); 
 
 function butt() {
-     $(".btnSubmit").unbind('click');
-     $(".btnSubmit").click(function(){
-         if ($(this).val() == "Cancel") {
+    $(".btnSubmit").unbind('click');
+    $(".btnSubmit").click(function(){
+        if ($(this).val() == "Cancel") {
             editScrollTop = $(window).scrollTop();
-
-            //$.post("ajax.php", {          
-                action = "cancel";
-                m_id = $("#m_id").val();
-                m_text = $("#text").val();
-                edit = "true";
-            //}),
-            Load(); 
-         } else if ($(this).val() == "Save") { 
+            action = "cancel";
+            m_id = $("#m_id").val();
+            m_text = $("#text").val();
+            edit = true;
+        } else if ($(this).val() == "Save") { 
             $.post("controller/message.php", {
                 action: "save",
-                id:  $("#m_id").val(),
-                text: $("#text").val()
-            }),
-         editScrollTop = $(window).scrollTop();
-         $("#ajax").empty();
-         last_message_id = 0;  
-         edit = "false";
-         Load(); 
-         }
-         return false;
+                id: $("#m_id").val(), 
+                text: $("#text").val() 
+            }, function() {
+                return false;
+            });
+            action = "save";
+            m_id = $("#m_id").val();
+            m_text = $("#text").val();
+            edit = true;
+        }
+        editScrollTop = $(window).scrollTop();
+        edit = "false";
+        last_edit = null;
+        Load(); 
+        return false;
     });  
 }
 
@@ -40,7 +41,14 @@ function remote() {
 		$.get( $(this).attr('href'), function() {
         });
         editScrollTop = $(window).scrollTop();
-        edit = parseParams(parameters)["edit"];
+        if (parseParams(parameters)["edit"]) {
+            edit = parseParams(parameters)["edit"];
+        } else if (parseParams(parameters)["delete"]) {
+            del = parseParams(parameters)["delete"];
+        }
+        if (last_edit) {
+            replace_previous_edit();
+        }
         Load();
 		return false;
     }); 
