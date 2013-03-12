@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    setInterval("Load();", 2000);
+    setInterval("Load();", 5000);
 	Load();
 });
 
@@ -16,6 +16,9 @@ function Send() {
     return false;
 }
 
+var action = null;
+var m_id = null;
+var m_text = null;
 var last_message_id = 0;
 var post_params = {};
 var load_in_process = false;
@@ -23,6 +26,9 @@ var edit = false;
 var layout = "false";
 var tempScrollTop = 0;
 var editScrollTop = 0;
+var replace_from = false;
+var replace_to = false;
+var str = null;
 
 function Load() {
     if (!load_in_process) {
@@ -30,7 +36,10 @@ function Load() {
     	$.post("ajax.php", {
             last_message_id: last_message_id,
             edit: edit,
-            layout: layout
+            layout: layout,
+            action: action,
+            m_id: m_id,
+            m_text: m_text
         },
                 //post_params,
    	    function (result) {
@@ -41,9 +50,23 @@ function Load() {
                 tempScrollTop = $(window).scrollTop();
             }
             eval(result);
+            ajax_replace();
+            remote();
+            butt();
 		    load_in_process = false;
             $(window).scrollTop(tempScrollTop);
     	});
     }
 }        
+
+function ajax_replace() {
+    if (edit) {
+        str = $("#ajax").html();
+        $("#ajax").html(str.replace(new RegExp(replace_from, 'gi'), replace_to));
+        edit = false;
+        replace_from = false;
+        replace_to = false;
+        action = null;
+    }
+}
 

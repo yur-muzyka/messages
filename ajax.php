@@ -41,10 +41,10 @@ if (!$user->location) {      // groups view
     $js .= join('', file("view/js/remote.js"));
     echo $js;
 } else {               // messages view
-    if ($_POST["edit"]) {
-        $edit = $_POST["edit"];
-        $js .= "edit=".$edit.";";
-    }
+    $edit = $_POST["edit"];
+    $action = $_POST["action"];
+    $message_id = $_POST["m_id"];
+    $message_text = $_POST["m_text"];
     $js .= 'var ajax = $("#ajax");';
 
     // header and footer(text_area)
@@ -67,7 +67,6 @@ if (!$user->location) {      // groups view
         $js .= 'header.append("'. mysql_real_escape_string($header_tpl->html) .'");';
         $js .= 'footer.append("'. mysql_real_escape_string($footer_tpl->html) .'");';
         $js .= 'layout=true;';
-
     }
 
     // messages load
@@ -89,6 +88,31 @@ if (!$user->location) {      // groups view
         $last_message_id = end($messages)->id;
         $js .= 'last_message_id='. $last_message_id .';';
         $js .= 'ajax.append("'. mysql_real_escape_string($messages_list) .'");';
+    }
+
+    // ajax_replace
+    if ($edit) {
+        $edit_temple = new Template();
+        $edit_temple->get_tpl("view/_message_edit.tpl");
+        $edit_text = Message::find($edit)->text;
+        $edit_temple->set_value("text", $edit_text);
+        $edit_temple->set_value("id", $edit);
+        $edit_temple->tpl_parse();
+
+        $standard_temple = new Template();
+        $standard_temple->get_tpl("view/_message.tpl");
+        $standard_text = Message::find($message_id)->text;
+        $standard_temple->set_value("text", $standard_text);
+        $standard_temple->set_value("id", $message_id);
+        $standard_temple->tpl_parse();
+
+        if ($action == "cancel") {
+            $js .= 'replace_from = "<!--begin'. $message_id .'-->(.|\n|\r)*?<!--end'. $message_id .'-->";';
+            $js .= 'replace_to = "'. mysql_real_escape_string($standard_temple->html) .'";';
+        } else if ($edit != "false") {
+            $js .= 'replace_from = "<!--begin'. $edit .'-->(.|\n|\r)*?<!--end'. $edit .'-->";';
+            $js .= 'replace_to = "'. mysql_real_escape_string($edit_temple->html) .'";';
+        }
     }
 
     $js .= join('', file("view/js/remote.js"));

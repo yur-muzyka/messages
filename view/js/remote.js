@@ -1,30 +1,25 @@
 $(document).ready(function () {
     $("#m_form").submit(Send);
     //$("#m_text").focus();    
+    
 }); 
 
-
-
-$(function() {
+function butt() {
+     $(".btnSubmit").unbind('click');
      $(".btnSubmit").click(function(){
          if ($(this).val() == "Cancel") {
             editScrollTop = $(window).scrollTop();
 
-            $.post("controller/message.php", {
-                action: "edit",
-                id:  $("#m_id").val(),
-                text: $("#text").val()
-            }),
-
-
-
-            //$("#ajax").empty();
-            //last_message_id = 0;  
-            edit = "false";
+            //$.post("ajax.php", {          
+                action = "cancel";
+                m_id = $("#m_id").val();
+                m_text = $("#text").val();
+                edit = "true";
+            //}),
             Load(); 
          } else if ($(this).val() == "Save") { 
             $.post("controller/message.php", {
-                action: "edit",
+                action: "save",
                 id:  $("#m_id").val(),
                 text: $("#text").val()
             }),
@@ -36,33 +31,20 @@ $(function() {
          }
          return false;
     });  
-});
+}
 
-$(function() {
+function remote() {
+    $(".remote").unbind('click');
     $(".remote").click(function() {
         parameters = $(this).attr('href').split('?')[1];
 		$.get( $(this).attr('href'), function() {
         });
         editScrollTop = $(window).scrollTop();
-                    //$("#ajax").replaceWith("lol");
-
-
-var str = $("#ajax").html();
-var regex = /a/gi;
-$("#ajax").html(str.replace(regex, "\n"));
-
-
-
-        //$("#ajax").empty();
-        //$("#header").empty();
-        //$("#footer").empty();
-        //layout = false;
-        //last_message_id = 0;
         edit = parseParams(parameters)["edit"];
         Load();
 		return false;
     }); 
-});     
+}  
 
 function parseParams(aURL) {
 	var vars = {};
