@@ -62,7 +62,7 @@ function Load() {
 function ajax_replace() {
     if (edit) {
         str = $("#ajax").html();
-        $("#ajax").html(str.replace(new RegExp(replace_from, 'gi'), replace_to));
+        $(replace_from).html(replace_to);
         edit = false;
         replace_from = false;
         replace_to = false;

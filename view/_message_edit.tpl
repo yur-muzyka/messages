@@ -1,4 +1,4 @@
-<!--begin{id}-->
+<div id="m_{id}">
 <tr>
     <form action="controller/message.php" method=post>
         <tr>
@@ -11,4 +11,4 @@
         </tr>
     </form>
 </tr>
-<!--end{id}-->
+</div>

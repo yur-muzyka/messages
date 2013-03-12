@@ -107,10 +107,10 @@ if (!$user->location) {      // groups view
         $standard_temple->tpl_parse();
 
         if ($action == "cancel") {
-            $js .= 'replace_from = "<!--begin'. $message_id .'-->(.|\n|\r)*?<!--end'. $message_id .'-->";';
+            $js .= 'replace_from = "#m_'.$message_id.'";';
             $js .= 'replace_to = "'. mysql_real_escape_string($standard_temple->html) .'";';
         } else if ($edit != "false") {
-            $js .= 'replace_from = "<!--begin'. $edit .'-->(.|\n|\r)*?<!--end'. $edit .'-->";';
+            $js .= 'replace_from = "#m_'.$edit.'";';
             $js .= 'replace_to = "'. mysql_real_escape_string($edit_temple->html) .'";';
         }
     }
