@@ -87,6 +87,11 @@ if ($opponent_id == "null") {      // groups view
                 }
             $author = User::find($message->author_id);
             $message_tpl->set_value("author", $author->login);
+            if ($message->author_id == $user->id) {
+                $ed = '<a class="remote" href="ajax.php?edit='.$message->id.'"><img src="view/img/pen.png"></a>';
+            } else {
+                $ed = '&nbsp;&nbsp;&nbsp;';
+            }
             if ($message->author_status == "new" && $message->recipient_id == $user->id) {
                 $message_tpl->set_value("img", "<img src='view/img/new.png'>");
                 $message_tpl->set_value("font", "<font style=\"background-color: yellow\">");
@@ -96,6 +101,7 @@ if ($opponent_id == "null") {      // groups view
                 $message_tpl->set_value("img", "");
                 $message_tpl->set_value("font", "");
             }
+            $message_tpl->set_value("ed", $ed);
             $message_tpl->set_value("text", $message->text);
             $message_tpl->set_value("id", $message->id);
             $message_tpl->tpl_parse();
@@ -135,6 +141,8 @@ if ($opponent_id == "null") {      // groups view
 
 function create_message_html($templ_path, $id, $author, $text) {
     $tpl = new Template();
+    $ed = '<a class="remote" href="ajax.php?edit='.$id.'"><img src="view/img/pen.png"></a>';
+    $tpl->set_value("ed", $ed);
     $tpl->get_tpl($templ_path);
     $tpl->set_value("img", "");
     $tpl->set_value("font", "");
