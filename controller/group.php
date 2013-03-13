@@ -2,7 +2,7 @@
 require "../config.php";
 require "../model/user.php";
 require "../model/auth.php";
-require "../model/template.php";
+require "../model/message.php";
 
 session_start();
 if (!Auth::is_logged($_SESSION["login"], $_SESSION["password"])) {
@@ -10,13 +10,9 @@ if (!Auth::is_logged($_SESSION["login"], $_SESSION["password"])) {
 }
 
 $user = Auth::current_user();
+$delete = $_GET["delete"];
 
-if ($_GET["id"]) {
-    $user->location = $_GET["id"];
-    $user->save();
-} elseif ($_GET["reset"]) {
-    unset($user->location);
-    $user->save();
-}
-
+if ($delete) {
+    Message::group_delete($delete, $user->id);
+}    
 ?>

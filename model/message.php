@@ -12,12 +12,10 @@ class Message {
             (0, '$text', '$author_id', '$recipient_id', 'new', 'new')");
     }
 
-    public static function get_messages($user_id, $opponent_id, $last_message_id) {
-        $result = mysql_query("SELECT * FROM messages WHERE author_id='$user_id' AND recipient_id='$opponent_id' AND id>'$last_message_id'
-            AND (('$user_id'=author_id AND author_status != 'delete') OR ('$user_id'=recipient_id AND recipient_status != 'delete')) 
+    public static function get_all_messages($user_id, $opponent_id) {
+        $result = mysql_query("SELECT * FROM messages WHERE author_id='$user_id' AND recipient_id='$opponent_id'
             UNION ALL
-            SELECT * FROM messages WHERE author_id='$opponent_id' AND recipient_id='$user_id' AND id>'$last_message_id'
-            AND (('$user_id'=author_id AND author_status != 'delete') OR ('$user_id'=recipient_id AND recipient_status != 'delete')) 
+            SELECT * FROM messages WHERE author_id='$opponent_id' AND recipient_id='$user_id'
             ORDER BY id");
         $messages = array();
         while ($raw = mysql_fetch_array($result)) {
@@ -26,7 +24,28 @@ class Message {
             $message->text = $raw["text"];
             $message->author_id = $raw["author_id"];
             $message->recipient_id = $raw["recipient_id"];
-            $message->author_status = $raw["author_statuw"];
+            $message->author_status = $raw["author_status"];
+            $message->recipient_status = $raw["recipient_status"];
+            $messages[] = $message;
+        }
+        return $messages;
+    }
+
+    public static function get_messages($user_id, $opponent_id, $last_message_id) {
+        $result = mysql_query("SELECT * FROM messages WHERE author_id='$user_id' AND recipient_id='$opponent_id' AND id>'$last_message_id'
+            AND author_status != 'delete' 
+            UNION ALL
+            SELECT * FROM messages WHERE author_id='$opponent_id' AND recipient_id='$user_id' AND id>'$last_message_id'
+            AND recipient_status != 'delete'
+            ORDER BY id");
+        $messages = array();
+        while ($raw = mysql_fetch_array($result)) {
+            $message = new Message();
+            $message->id = $raw["id"];
+            $message->text = $raw["text"];
+            $message->author_id = $raw["author_id"];
+            $message->recipient_id = $raw["recipient_id"];
+            $message->author_status = $raw["author_status"];
             $message->recipient_status = $raw["recipient_status"];
             $messages[] = $message;
         }
@@ -37,7 +56,7 @@ class Message {
         $new_messages = array();
         $all_mess = Message::get_messages($author_id, $recipient_id, 0);
         foreach ($all_mess as $message) { if ($message->recipient_id == $author_id && 
-                $message->recipient_status == "new") {
+                $message->author_status == "new") {
                     $new_messages[] = $message;
                 }
         }
@@ -84,5 +103,27 @@ class Message {
 
     }
 
+    public static function group_delete($group_id, $user_id) {
+        $messages = Message::get_all_messages($group_id, $user_id);
+        foreach ($messages as $message) {
+            if (Message::is_deleated($message, $user_id)) {
+                continue;
+            } else if (($message->author_id == $user_id && $message->recipient_status == "delete") ||
+                ($message->author_id == $group_id && $message->author_status == "delete")) {
+                Message::remove_from_db($message->id);
+            } else {
+                Message::delete($message->id, $user_id);
+            }
+        }
+    }
+
+    public static function is_deleated($message, $user_id) {
+        if (($message->author_id == $user_id && $message->author_status == "delete") ||
+            ($message->recipient_id == $user_id && $message->recipient_status == "delete")) {
+                return true;
+            } else {
+                return false;
+            }
+    }
 }
 ?>

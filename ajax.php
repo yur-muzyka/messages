@@ -11,14 +11,15 @@ if (!Auth::is_logged($_SESSION["login"], $_SESSION["password"])) {
 }
 
 $user = Auth::current_user();
+$opponent_id = $_POST["opponent_id"];
 
 if ($_POST["act"] == "send") {
     $text = $_POST["text"];
-    Message::create($text, $user->id, $user->location);
+    Message::create($text, $user->id, $opponent_id);
     die();
 }
 
-if (!$user->location) {      // groups view
+if ($opponent_id == "null") {      // groups view
     $all_users = User::find_all();
     $users_tpl = new Template();
     $users_tpl->get_tpl("view/_users.tpl");
@@ -27,10 +28,17 @@ if (!$user->location) {      // groups view
             continue;
         }
         $count++;
-        $users_tpl->set_value("login", $us->login);
         $users_tpl->set_value("count", $count);
-        $users_tpl->set_value("mess_all", count(Message::get_messages($user->id, $us->id, 0)));
-        $users_tpl->set_value("mess_new", count(Message::get_new_messages($user->id, $us->id)));
+        $mess_all = count(Message::get_messages($user->id, $us->id, 0));
+        $mess_new = count(Message::get_new_messages($user->id, $us->id));
+        if ($mess_new == 0) {
+            $mes = "(".$mess_all.")";
+            $users_tpl->set_value("login", $us->login);
+        } else {
+            $mes = "(".$mess_all."/<b>".$mess_new."</b>)";
+            $users_tpl->set_value("login", "<font style=\"background-color: yellow\">".$us->login."</font>");
+        }
+        $users_tpl->set_value("mes", $mes);
         $users_tpl->set_value("id", $us->id);
         $users_tpl->tpl_parse();
         $users_list .= $users_tpl->html;
@@ -40,7 +48,7 @@ if (!$user->location) {      // groups view
     $js .= 'ajax.append("'. mysql_real_escape_string($users_list) .'");';
     $js .= join('', file("view/js/remote.js"));
     echo $js;
-} else {               // messages view
+} else if ($opponent_id && $opponent_id != "null") {               // messages view
     $edit = $_POST["edit"];
     $action = $_POST["action"];
     $message_id = $_POST["m_id"];
@@ -49,15 +57,14 @@ if (!$user->location) {      // groups view
 
     // header and footer(text_area)
     $layout = $_POST["layout"];
-
     $last_message_id = $_POST["last_message_id"];
-    $messages = Message::get_messages($user->id, $user->location, $last_message_id);
+    $messages = Message::get_messages($user->id, $opponent_id, $last_message_id);
 
-    if ($layout == "null") {
+    if ($layout == "true") {
         $header_tpl = new Template();
         $footer_tpl = new Template();
         $header_tpl->get_tpl("view/_messages_header.tpl");
-        $header_tpl->set_value("opponent", User::find($user->location)->login);
+        $header_tpl->set_value("opponent", User::find($opponent_id)->login);
         $header_tpl->tpl_parse();
 
         $footer_tpl->get_tpl("view/_text_area.tpl");
@@ -66,7 +73,7 @@ if (!$user->location) {      // groups view
         $js .= 'var footer = $("#footer");';
         $js .= 'header.append("'. mysql_real_escape_string($header_tpl->html) .'");';
         $js .= 'footer.append("'. mysql_real_escape_string($footer_tpl->html) .'");';
-        $js .= 'layout=true;';
+        $js .= 'layout="false";';
     }
 
     // messages load
@@ -80,6 +87,15 @@ if (!$user->location) {      // groups view
                 }
             $author = User::find($message->author_id);
             $message_tpl->set_value("author", $author->login);
+            if ($message->author_status == "new" && $message->recipient_id == $user->id) {
+                $message_tpl->set_value("img", "<img src='view/img/new.png'>");
+                $message_tpl->set_value("font", "<font style=\"background-color: yellow\">");
+                $message->author_status = "read";
+                $message->save();
+            } else {
+                $message_tpl->set_value("img", "");
+                $message_tpl->set_value("font", "");
+            }
             $message_tpl->set_value("text", $message->text);
             $message_tpl->set_value("id", $message->id);
             $message_tpl->tpl_parse();
@@ -103,11 +119,7 @@ if (!$user->location) {      // groups view
         } else if ($del != "null") {
             $js .= 'replace_from = "#m_'. $del .'";';
             $js .= 'replace_to = "";';
-        }
-        
-        
-        
-        else if ($edit != "null") {
+        } else if ($edit != "null") {
             $message = Message::find($edit);
             $author = User::find($message->author_id);
             $replace_to = create_message_html("view/_message_edit.tpl", $edit, "", $message->text); 
@@ -117,8 +129,6 @@ if (!$user->location) {      // groups view
             $js .= 'last_edit = ["#m_'.$edit. '", "'.mysql_real_escape_string($last_edit) .'"];'; 
         }
     }
-
-
     $js .= join('', file("view/js/remote.js"));
     echo $js;
 }
@@ -126,12 +136,12 @@ if (!$user->location) {      // groups view
 function create_message_html($templ_path, $id, $author, $text) {
     $tpl = new Template();
     $tpl->get_tpl($templ_path);
+    $tpl->set_value("img", "");
+    $tpl->set_value("font", "");
     $tpl->set_value("author", $author);
     $tpl->set_value("text", $text);
     $tpl->set_value("id", $id);
     $tpl->tpl_parse();
     return $tpl->html;
 }
-
-
 ?>

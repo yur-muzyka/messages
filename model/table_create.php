@@ -4,7 +4,6 @@
             id int NOT NULL AUTO_INCREMENT, 
             `login` VARCHAR(50) NOT NULL,
             `password` VARCHAR(50) NOT NULL,
-            `location` INT,
             PRIMARY KEY (id)
         )";
 

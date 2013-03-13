@@ -7,8 +7,15 @@
     
     $template = new Template();
 
+    $button = $_POST["send"];
     $login = $_POST["login"];
     $password = $_POST["password"];
+
+    
+    if ($button == "Cancel") {
+        header('Location: /');
+        exit;
+    }
 
         $logout = join('', file("view/auth/logout.tpl"));
         $template->set_value("logout", $logout);

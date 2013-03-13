@@ -46,6 +46,15 @@ function remote() {
         } else if (parseParams(parameters)["delete"]) {
             del = parseParams(parameters)["delete"];
         }
+        if (parseParams(parameters)["opponent_id"]) {
+            layout="true";
+            last_message_id = 0;
+            $("#ajax").empty();
+            $("#header").empty();
+            $("#footer").empty();
+            
+            opponent_id = parseParams(parameters)["opponent_id"];
+        }
         if (last_edit) {
             replace_previous_edit();
         }

@@ -6,8 +6,16 @@
         <script type="text/javascript" src="view/js/custom.js"></script>
     </head>
     <body>
-        {logout}
-        <hr> 
+    <center>
+            <table style="width: 50%;">
+                <tr>
+                    <td align="right">
+                        {logout}
+                        <hr>
+                    </td>
+                </tr>
+            </table>
+        </center>
         <div id="header"></div>
         <div id="ajax"></div>
         <div id="footer"></div>

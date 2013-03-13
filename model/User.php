@@ -3,7 +3,6 @@ class User {
     public $id;
     public $login;
     public $password;
-    public $location;
 
     public static function find_all() {
         $users = array();
@@ -13,7 +12,6 @@ class User {
             $user->id = $raw["id"];
             $user->login = $raw["login"];
             $user->password = $raw["password"];
-            $user->location = $raw["location"];
             $users[] = $user;
         }
         return $users;
@@ -29,7 +27,6 @@ class User {
         $user->id = $raw["id"];
         $user->login = $raw["login"];
         $user->password = $raw["password"];
-        $user->location = $raw["location"];
         return $user;
     }
 
@@ -43,16 +40,15 @@ class User {
         $user->id = $raw["id"];
         $user->login = $raw["login"];
         $user->password = $raw["password"];
-        $user->location = $raw["location"];
         return $user;
     }
 
     public static function create($login, $password) {
-        mysql_query("INSERT INTO users VALUES (0, '$login', '$password', null)") or die(mysql_error());
+        mysql_query("INSERT INTO users VALUES (0, '$login', '$password')") or die(mysql_error());
     }
 
     public function save() {
-        mysql_query("UPDATE users SET login='$this->login', password='$this->password', location='$this->location'
+        mysql_query("UPDATE users SET login='$this->login', password='$this->password'
             WHERE id='$this->id'");
     }
 }

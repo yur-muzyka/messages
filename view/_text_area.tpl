@@ -1,3 +1,4 @@
+</table>
 <center>
     <form id="m_form" action="">
         <table style="width: 50%;">

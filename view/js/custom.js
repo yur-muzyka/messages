@@ -5,8 +5,9 @@ $(document).ready(function () {
 
 function Send() {
     $.post("ajax.php", {
-        act: "send",  // указываем скрипту, что мы отправл€ем новое сообщение и его нужно записать
-        text: $("#m_text").val() //  сам текст сообщени€
+        act: "send",
+        text: $("#m_text").val(),
+        opponent_id: opponent_id
     },
     Load );
     $("#m_text").val("");
@@ -19,16 +20,16 @@ var action = null;
 var m_id = null;
 var m_text = null;
 var last_message_id = 0;
-var post_params = {};
 var load_in_process = false;
 var edit = null;
-var layout = "null";
+var layout = "true";
 var tempScrollTop = 0;
 var editScrollTop = 0;
 var replace_from = null;
 var replace_to = null;
 var str = null;
 var del = null;
+var opponent_id = null;
 
 function Load() {
     if (!load_in_process) {
@@ -40,9 +41,9 @@ function Load() {
             layout: layout,
             action: action,
             m_id: m_id,
-            m_text: m_text
+            m_text: m_text,
+            opponent_id: opponent_id
         },
-                //post_params,
    	    function (result) {
             if (editScrollTop) {
                 tempScrollTop = editScrollTop;
