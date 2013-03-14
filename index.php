@@ -1,28 +1,27 @@
 <?
-    require "config.php";
+    require "config/config.php";
     require "model/table_create.php";
     require "model/user.php";
     require "model/auth.php";
     require "model/template.php";
-    
-    $template = new Template();
+    require "config/smarty.php";
+
+    session_start();
+
+    if ($_GET["logout"] == true) {
+        session_destroy();
+        header("Location: /");
+    }
 
     $button = $_POST["send"];
     $login = $_POST["login"];
     $password = $_POST["password"];
+    $logout = join('', file("view/auth/logout.tpl"));
 
-    
-    if ($button == "Cancel") {
-        header('Location: /');
-        exit;
-    }
+    $smarty = new Smarty_Message();
 
-        $logout = join('', file("view/auth/logout.tpl"));
-        $template->set_value("logout", $logout);
+    include "session.php";
+    $smarty->assign("logout", $logout);
+    $smarty->display("application.tpl");
 
-        include "session.php";
-
-        $template->get_tpl("view/application.tpl");
-        $template->tpl_parse();
-        echo $template->html;
 ?>

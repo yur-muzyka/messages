@@ -1,5 +1,5 @@
 <?
-    require "../config.php";
+    require "../config/config.php";
     require "../model/user.php";
 
     $login = $_POST["login"];

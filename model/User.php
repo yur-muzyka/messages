@@ -6,7 +6,7 @@ class User {
 
     public static function find_all() {
         $users = array();
-        $result = mysql_query("SELECT * FROM USERS") or die(mysql_error());
+        $result = mysql_query("SELECT * FROM users") or die(mysql_error());
         while ($raw = mysql_fetch_array($result)) {
             $user = new User();
             $user->id = $raw["id"];
